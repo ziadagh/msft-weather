@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Microsoft Weather Report</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #1e3c72, #2a5298);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      height: 100vh;
+      padding: 30px;
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    header h1 {
+      font-size: 3.5em;
+      margin: 0;
+      color: #f1c40f;
+      text-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+    }
+
+    main {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .left {
+      flex: 1;
+      max-width: 700px;
+    }
+
+    .right {
+      flex: 0 0 300px;
+      text-align: center;
+    }
+
+    .profile {
+      width: 100%;
+      max-width: 300px;
+      border-radius: 12px;
+      animation: shine 2s infinite alternate;
+    }
+
+    .host-name {
+      font-size: 1.5em;
+      margin-top: 10px;
+      font-style: italic;
+      color: #ecf0f1;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+    }
+
+    footer {
+      margin-top: 30px;
+      font-size: 1em;
+      color: #bdc3c7;
+      text-align: center;
+    }
+
+    @keyframes shine {
+      0% { filter: brightness(1); }
+      100% { filter: brightness(1.25); }
+    }
+
+    /* Weather-style animation */
+    .clouds {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://microsoft-my.sharepoint.com/:i:/g/personal/zagha_linkedin_biz/EdLIzlZR0alBtxXm_DGot3sB6jdUgBh4n9polXrysW5kOg?e=DIQ8En') no-repeat center center / cover;
+      animation: moveclouds 60s linear infinite;
+      opacity: 20;
+      z-index: -1;
+    }
+
+    @keyframes moveclouds {
+  from { opacity: 0.2; }
+  to { opacity: 0.2; }
+}
+      to { background-position-x: -2000px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="clouds"></div>
+  <header>
+    <h1>Microsoft Weather Report</h1>
+  </header>
+
+  <main>
+    <div class="left">
+      <!-- TradingView Single Ticker Widget -->
+      <div class="tradingview-widget-container">
+        <div class="tradingview-widget-container__widget"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
+        {
+          "symbol": "NASDAQ:MSFT",
+          "colorTheme": "dark",
+          "isTransparent": false,
+          "locale": "en"
+        }
+        </script>
+      </div>
+    </div>
+
+    <div class="right">
+      <img src="https://microsoft-my.sharepoint.com/:i:/g/personal/zagha_linkedin_biz/EfooMS22q2RCpWopUpgBV3sBpnrso2b54wJ6MvcfG3uXNA?e=bYbmL3" alt="Reporter" class="profile" />
+      <div class="host-name">Hosted by Clement</div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2025 The MSFT Weather Team — Powered by fancy vibes and strong stocks.
+  </footer>
+
+  <audio id="bg-music" loop>
+    <!--<source src="lounge-jazz-elevator.mp3" type="audio/mpeg"> -->
+    <source src="https://microsoft-my.sharepoint.com/:u:/g/personal/zagha_linkedin_biz/EfLBE4i3RqlLkRNhfP4q05oB-zkpGlukAMKg82_jzGYKMg?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJPbmVEcml2ZUZvckJ1c2luZXNzIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXciLCJyZWZlcnJhbFZpZXciOiJNeUZpbGVzTGlua0NvcHkifX0&e=t0hUJN" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <button id="play-toggle" style="
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 15px;
+    font-size: 14px;
+    background-color: rgba(0,0,0,0.6);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    z-index: 10;
+  ">
+    ▶️ Play
+  </button>
+
+  <script>
+    const audio = document.getElementById('bg-music');
+    const playBtn = document.getElementById('play-toggle');
+
+    audio.volume = 0.2;
+
+    // Set initial state
+    let isPlaying = false;
+
+    const toggleAudio = () => {
+      if (isPlaying) {
+        audio.pause();
+        playBtn.textContent = '▶️ Play';
+      } else {
+        audio.play().then(() => {
+          playBtn.textContent = '⏸ Pause';
+        }).catch(err => {
+          console.error("Playback failed:", err);
+        });
+      }
+      isPlaying = !isPlaying;
+    };
+
+    playBtn.addEventListener('click', toggleAudio);
+  </script>
+
+</body>
+</html>
