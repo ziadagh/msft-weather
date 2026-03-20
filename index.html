@@ -1,262 +1,1165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Microsoft Weather Report</title>
-  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&display=swap" rel="stylesheet">
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding: 30px 20px;
-    }
-    .top-bar {
-      position: fixed;
-      top: 20px;
-      width: 100%;
-      display: flex;
-      justify-content: space-between;
-      padding: 0 20px;
-      z-index: 15;
-    }
-    .logo {
-      width: 50px;
-      height: auto;
-    }
-    .change-bg-button, .change-host-button, #play-toggle {
-      padding: 8px 12px;
-      font-size: 14px;
-      background-color: rgba(0,0,0,0.6);
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    header h1 {
-      font-family: 'Raleway', sans-serif;
-      font-size: 3em;
-      margin: 80px 0 30px;
-      color: #ffffff;
-      text-align: center;
-      text-shadow: 3px 3px 8px rgba(0,0,0,0.4);
-      background: linear-gradient(to right, #6dd5ed, #2193b0);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    main {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 100%;
-      max-width: 1200px;
-      margin-top: auto;
-      margin-bottom: auto;
-    }
-    .top-section {
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      gap: 20%;
-      width: 100%;
-      flex-wrap: wrap;
-    }
-    .left, .right {
-      flex: 1;
-      min-width: 300px;
-      text-align: center;
-    }
-    .host-container {
-      position: relative;
-      display: inline-block;
-    }
-    .profile {
-      width: 100%;
-      max-width: 250px;
-      border-radius: 12px;
-      box-shadow: 0 0 25px 10px rgba(255,255,255,0.1);
-      transition: transform 0.6s ease;
-    }
-    .host-name {
-      font-size: 1.5em;
-      margin-top: 10px;
-      font-style: italic;
-      color: #ecf0f1;
-      text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
-    }
-    .quote {
-      position: absolute;
-      top: 10px;
-      left: 105%;
-      width: 180px;
-      padding: 10px;
-      background: white;
-      color: black;
-      font-style: italic;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-      font-size: 0.95em;
-    }
-    .quote::after {
-      content: "";
-      position: absolute;
-      top: 20px;
-      left: -10px;
-      border-width: 10px;
-      border-style: solid;
-      border-color: transparent white transparent transparent;
-    }
-    footer {
-      margin-top: 40px;
-      font-size: 0.9em;
-      color: #bdc3c7;
-      text-align: center;
-    }
-    .clouds {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      background: url("bg1.gif") no-repeat center center / cover;
-      background-attachment: fixed;
-      background-size: cover;
-      z-index: -1;
-      transition: background-image 0.5s ease-in-out;
-    }
-    .clouds::after {
-      content: "";
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      backdrop-filter: blur(2px);
-      z-index: -1;
-    }
-    @media (max-width: 768px) {
-      .top-section { flex-direction: column; align-items: center; gap: 40px; }
-      .quote { left: 0; top: 110%; }
-    }
-    @media (max-width: 480px) {
-      header h1 { font-size: 1.5em; }
-      .quote { font-size: 0.9em; }
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>MSFT Weather Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Source+Serif+4:wght@400;600&family=Courier+Prime:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+/* ── THEME VARIABLES ── */
+:root{
+  --navy:#1a2744;--navy-light:#253460;
+  --cream:#f5f2ec;--white:#ffffff;--paper:#faf9f6;
+  --gold:#c8962c;--gold-light:#e8b84b;
+  --green:#2a6b3a;--green-light:#3a8c50;
+  --red:#b91c1c;--red-light:#dc2626;
+  --border:#c8c2b6;--border-dark:#9a9080;
+  --text:#1a1814;--text-dim:#5a5248;--text-muted:#8a8278;
+  --panel-shadow:2px 3px 8px rgba(0,0,0,.12);
+  --accent:var(--gold);
+}
+[data-theme="newsroom"]{--accent:#1a2744;--navy:#b91c1c;--navy-light:#dc2626;--gold:#b91c1c;--gold-light:#dc2626;--green:#1a2744;--green-light:#253460}
+[data-theme="green"]{--cream:#eef5ee;--paper:#f5fbf5;--navy:#1a4a2a;--navy-light:#2a6a3a;--gold:#2a6b3a;--gold-light:#3a8c50;--accent:#2a6b3a}
+[data-theme="blue"]{--cream:#eef2f8;--paper:#f5f8fd;--navy:#1a2744;--navy-light:#253460;--gold:#2255aa;--gold-light:#3366cc;--accent:#2255aa}
+
+body{font-family:'Source Serif 4',Georgia,serif;background:var(--cream);color:var(--text);min-height:100vh;overflow-x:hidden}
+
+/* ── SKY CANVAS ── */
+#sky-canvas{position:fixed;inset:0;width:100%;height:100%;z-index:0;opacity:.35}
+
+/* ── APP ── */
+#app{position:relative;z-index:1;display:flex;flex-direction:column;min-height:100vh}
+
+/* ── MASTHEAD ── */
+#masthead{background:var(--navy);color:#fff;padding:0;border-bottom:4px solid var(--gold);flex-shrink:0}
+#masthead-inner{max-width:1400px;margin:0 auto;display:flex;align-items:stretch;justify-content:space-between;padding:0 20px}
+.masthead-left{display:flex;align-items:center;gap:14px;padding:10px 0}
+.masthead-logo-img{height:34px;opacity:.92;filter:brightness(10)}
+.masthead-brand{font-family:'Playfair Display',Georgia,serif;font-size:22px;letter-spacing:1px;color:#fff;line-height:1}
+.masthead-tagline{font-family:'Courier Prime',monospace;font-size:9px;color:rgba(255,255,255,.5);letter-spacing:2px;text-transform:uppercase;margin-top:2px}
+.masthead-right{display:flex;align-items:center;gap:10px;padding:10px 0}
+#clock{font-family:'Courier Prime',monospace;font-size:14px;color:rgba(255,255,255,.8);letter-spacing:2px}
+.live-badge{display:flex;align-items:center;gap:5px;background:var(--red);padding:4px 10px;font-family:'Courier Prime',monospace;font-size:12px;letter-spacing:2px;font-weight:700}
+.live-dot{width:7px;height:7px;border-radius:50%;background:#fff;animation:blink .9s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.1}}
+#theme-btn{padding:5px 10px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.3);color:rgba(255,255,255,.85);font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;transition:background .2s;white-space:nowrap}
+#theme-btn:hover{background:rgba(255,255,255,.2)}
+
+/* ── BREAKING BANNER ── */
+#breaking-banner{background:var(--red);padding:4px 0;overflow:hidden;white-space:nowrap;flex-shrink:0}
+.breaking-label{display:inline-block;background:#fff;color:var(--red);font-family:'Courier Prime',monospace;font-size:11px;font-weight:700;padding:0 12px;margin-right:14px;letter-spacing:1px}
+#breaking-text{display:inline-block;font-family:'Courier Prime',monospace;font-size:11px;letter-spacing:.5px;color:#fff;animation:scroll-left 42s linear infinite}
+@keyframes scroll-left{0%{transform:translateX(70vw)}100%{transform:translateX(-100%)}}
+
+/* ── MAIN GRID ── */
+#main-content{flex:1;display:grid;grid-template-columns:1fr 320px;gap:0;padding:18px 20px 18px;max-width:1400px;width:100%;margin:0 auto}
+
+/* ── MASTHEAD TITLE ── */
+#show-title{grid-column:1/-1;text-align:center;padding:12px 0 16px;cursor:pointer;user-select:none}
+#show-title h1{font-family:'Playfair Display',Georgia,serif;font-size:3em;color:var(--navy);letter-spacing:2px;line-height:1;border-bottom:3px double var(--gold);padding-bottom:10px;display:inline-block}
+#show-title h1 span{color:var(--gold)}
+.show-subtitle{font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:4px;color:var(--text-muted);text-transform:uppercase;margin-top:8px}
+#title-click-hint{font-family:'Courier Prime',monospace;font-size:10px;color:var(--border-dark);letter-spacing:2px;margin-top:4px;transition:color .3s}
+#title-click-hint.lit{color:var(--gold)}
+
+/* ── PANELS ── */
+#left-panel{display:flex;flex-direction:column;gap:14px;padding-right:16px}
+#right-panel{display:flex;flex-direction:column;gap:12px}
+
+.card{background:var(--white);border:1px solid var(--border);box-shadow:var(--panel-shadow);overflow:hidden}
+.card-header{background:var(--navy);color:#fff;padding:6px 12px;font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;border-bottom:2px solid var(--gold);display:flex;align-items:center;gap:6px}
+.card-header-dot{width:8px;height:8px;border-radius:50%;background:var(--gold)}
+
+/* ── CONDITION DISPLAY ── */
+#condition-display{background:var(--white);border:1px solid var(--border);box-shadow:var(--panel-shadow);padding:16px 20px;display:flex;align-items:center;gap:18px;border-left:5px solid var(--gold)}
+#weather-icon-big{font-size:66px;line-height:1;min-width:78px;text-align:center;transition:all .5s}
+#condition-text{flex:1}
+#condition-name{font-family:'Playfair Display',Georgia,serif;font-size:2em;line-height:1;transition:color .5s}
+#condition-desc{font-size:13px;color:var(--text-dim);margin-top:6px;line-height:1.6;font-family:'Source Serif 4',serif}
+.up{color:var(--green)} .down{color:var(--red)} .flat{color:var(--text-muted)}
+
+/* ── CHART PANEL ── */
+#chart-panel{background:var(--white);border:1px solid var(--border);box-shadow:var(--panel-shadow);overflow:hidden}
+
+/* ── FORECAST ── */
+#forecast-panel{background:var(--white);border:1px solid var(--border);box-shadow:var(--panel-shadow);overflow:hidden}
+#forecast-grid{display:grid;grid-template-columns:repeat(5,1fr)}
+.forecast-day{padding:10px 6px;text-align:center;border-right:1px solid var(--border);transition:background .2s}
+.forecast-day:last-child{border-right:none}
+.forecast-day:hover{background:var(--paper)}
+.forecast-day-name{font-family:'Courier Prime',monospace;font-size:11px;letter-spacing:1px;color:var(--text-muted);font-weight:700}
+.forecast-icon{font-size:22px;margin:5px 0 4px;display:block}
+.forecast-desc{font-size:10px;color:var(--text-dim);line-height:1.3;min-height:26px;font-family:'Courier Prime',monospace}
+.forecast-move{font-family:'Courier Prime',monospace;font-size:12px;font-weight:700;margin-top:4px}
+
+/* ── POLL ── */
+#poll-panel{background:var(--white);border:1px solid var(--border);box-shadow:var(--panel-shadow);overflow:hidden}
+#poll-question{padding:10px 12px 6px;font-size:13px;font-weight:600;color:var(--text);font-family:'Source Serif 4',serif}
+.poll-opt{display:flex;align-items:center;gap:8px;padding:6px 12px;cursor:pointer;transition:background .15s;flex-wrap:wrap;border-top:1px solid var(--border)}
+.poll-opt:hover{background:var(--paper)}
+.poll-opt-emoji{font-size:15px;flex-shrink:0}
+.poll-opt-label{font-size:12px;color:var(--text-dim);flex:1;font-family:'Courier Prime',monospace}
+.poll-bar-wrap{display:none;width:100%;height:4px;background:var(--border);overflow:hidden;margin-top:3px}
+.poll-bar-fill{height:100%;width:0;transition:width .8s ease}
+.poll-pct{display:none;font-family:'Courier Prime',monospace;font-size:11px;color:var(--text-muted);min-width:32px;text-align:right}
+#poll-thankyou{display:none;margin:6px 12px;padding:8px 10px;border-left:3px solid var(--gold);font-size:12px;font-style:italic;color:var(--text-dim);background:var(--paper)}
+#poll-total{display:none;padding:3px 12px 8px;font-family:'Courier Prime',monospace;font-size:10px;color:var(--text-muted);letter-spacing:1px}
+
+/* ── HOST CARD ── */
+#host-card{background:var(--white);border:1px solid var(--border);box-shadow:var(--panel-shadow);overflow:hidden;flex:1;display:flex;flex-direction:column}
+#host-image-wrap{background:linear-gradient(160deg,var(--navy),var(--navy-light));display:flex;justify-content:center;padding:16px 16px 0;position:relative}
+#host-image{width:150px;height:178px;object-fit:cover;object-position:top;border-radius:4px 4px 0 0;display:block;border:2px solid var(--gold)}
+#host-avatar-fallback{width:150px;height:178px;border-radius:4px 4px 0 0;background:var(--navy);display:none;align-items:center;justify-content:center;font-size:56px;border:2px solid var(--gold)}
+#host-info{padding:10px 12px 4px}
+#host-name{font-family:'Playfair Display',Georgia,serif;font-size:1.3em;color:var(--navy)}
+#host-title{font-family:'Courier Prime',monospace;font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:2px;margin-top:2px}
+#quote-bubble{background:var(--paper);border:1px solid var(--border);border-left:4px solid var(--gold);padding:10px 12px;margin:8px 12px;position:relative}
+#quote-text{font-family:'Source Serif 4',serif;font-size:12px;font-style:italic;line-height:1.6;color:var(--text-dim);display:block;transition:opacity .3s}
+
+/* TTS */
+#tts-btn{display:flex;align-items:center;justify-content:center;gap:6px;margin:0 12px 4px;padding:6px 10px;background:var(--paper);border:1px solid var(--border);color:var(--navy);font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;text-transform:uppercase;transition:background .2s;width:calc(100% - 24px)}
+#tts-btn:hover{background:var(--cream)}
+#tts-btn.speaking{background:var(--navy);color:#fff;border-color:var(--navy)}
+.tts-wave{display:inline-flex;gap:2px;align-items:center}
+.tts-wave span{width:2px;background:currentColor;border-radius:1px;animation:twave .8s ease-in-out infinite}
+.tts-wave span:nth-child(1){height:5px;animation-delay:0s}.tts-wave span:nth-child(2){height:9px;animation-delay:.1s}.tts-wave span:nth-child(3){height:13px;animation-delay:.2s}.tts-wave span:nth-child(4){height:9px;animation-delay:.3s}.tts-wave span:nth-child(5){height:5px;animation-delay:.4s}
+@keyframes twave{0%,100%{transform:scaleY(.4)}50%{transform:scaleY(1)}}
+
+#host-controls{padding:0 12px 12px;display:flex;gap:6px}
+.btn{flex:1;padding:7px 8px;border:1px solid var(--border);background:var(--paper);color:var(--navy);font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;text-transform:uppercase;transition:background .2s,border-color .2s}
+.btn:hover{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn:active{transform:scale(.97)}
+
+/* ── MOOD ── */
+#mood-panel{background:var(--white);border:1px solid var(--border);box-shadow:var(--panel-shadow);overflow:hidden}
+#mood-bar-wrap{padding:10px 12px 12px}
+.mood-bar-labels{display:flex;justify-content:space-between;font-family:'Courier Prime',monospace;font-size:9px;color:var(--text-muted);margin-bottom:5px;letter-spacing:1px}
+#mood-bar-track{height:10px;background:var(--border);overflow:hidden;border:1px solid var(--border-dark)}
+#mood-bar-fill{height:100%;transition:width 1s,background 1s;width:50%;background:var(--green)}
+#mood-emoji-row{display:flex;justify-content:space-between;margin-top:6px;font-size:16px}
+#mood-current{text-align:center;font-family:'Courier Prime',monospace;font-size:9px;color:var(--text-muted);letter-spacing:2px;margin-top:4px;text-transform:uppercase}
+
+/* ── TICKER ── */
+#ticker-bar{background:var(--navy);border-top:3px solid var(--gold);overflow:hidden;white-space:nowrap;flex-shrink:0}
+#ticker-inner{display:inline-block;animation:ticker-scroll 68s linear infinite;padding:7px 0}
+@keyframes ticker-scroll{0%{transform:translateX(100vw)}100%{transform:translateX(-100%)}}
+.ticker-item{display:inline-block;margin-right:50px;font-family:'Courier Prime',monospace;font-size:11px;letter-spacing:.5px;color:rgba(255,255,255,.8)}
+.ticker-item .tag{color:var(--gold-light);margin-right:6px;font-weight:700}
+
+/* ── MUSIC PLAYER ── */
+#music-player{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--navy);border-top:2px solid var(--gold);display:flex;align-items:center;gap:10px;padding:6px 18px}
+#music-play-btn,#music-skip-btn{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.08);color:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .2s;font-family:'Courier Prime',monospace}
+#music-play-btn{width:30px;height:30px;border-radius:50%;font-size:12px}
+#music-skip-btn{width:24px;height:24px;border-radius:50%;font-size:10px;color:rgba(255,255,255,.6)}
+#music-play-btn:hover,#music-skip-btn:hover{background:rgba(255,255,255,.18);color:#fff}
+#music-info{flex:1;min-width:0}
+#music-track{font-family:'Courier Prime',monospace;font-size:11px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:.5px}
+#music-artist{font-family:'Courier Prime',monospace;font-size:9px;color:rgba(255,255,255,.45);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#music-progress-wrap{flex:2;height:3px;background:rgba(255,255,255,.15);cursor:pointer;min-width:80px}
+#music-progress-fill{height:100%;background:var(--gold-light);width:0%;transition:width .5s linear}
+#music-vol{width:65px;accent-color:var(--gold-light);cursor:pointer}
+#music-status{font-family:'Courier Prime',monospace;font-size:10px;color:rgba(255,255,255,.35);letter-spacing:2px;flex-shrink:0}
+#music-err{font-family:'Courier Prime',monospace;font-size:10px;color:rgba(255,120,120,.7);display:none}
+
+/* ── ROULETTE OVERLAY ── */
+#roulette-overlay{display:none;position:fixed;inset:0;z-index:500;background:rgba(10,8,6,.82);align-items:center;justify-content:center}
+#roulette-overlay.open{display:flex}
+#roulette-modal{background:var(--white);border:3px solid var(--navy);max-width:500px;width:92%;position:relative;max-height:90vh;overflow-y:auto}
+#roulette-header{background:var(--navy);color:#fff;padding:10px 16px;font-family:'Playfair Display',serif;font-size:1.2em;display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid var(--gold)}
+#roulette-close{background:none;border:none;color:rgba(255,255,255,.6);font-size:20px;cursor:pointer;line-height:1;padding:0 4px}
+#roulette-close:hover{color:#fff}
+#roulette-subtitle{text-align:center;font-family:'Courier Prime',monospace;font-size:10px;color:var(--text-muted);letter-spacing:2px;padding:8px 0 4px;text-transform:uppercase}
+
+/* WHEEL */
+#wheel-wrap{display:flex;justify-content:center;padding:8px 0 10px}
+#wheel-container{position:relative;width:260px;height:260px}
+#wheel-canvas{display:block;border-radius:50%;border:3px solid var(--navy)}
+#wheel-pointer{position:absolute;top:-14px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:10px solid transparent;border-right:10px solid transparent;border-top:22px solid var(--gold);z-index:10}
+
+#roulette-body{padding:12px 16px}
+#roulette-spin-btn{display:block;width:100%;padding:11px;background:var(--navy);border:none;color:#fff;font-family:'Playfair Display',serif;font-size:16px;letter-spacing:2px;cursor:pointer;transition:background .2s;margin-bottom:10px}
+#roulette-spin-btn:hover{background:var(--navy-light)}
+#roulette-spin-btn:disabled{opacity:.4;cursor:default}
+#spin-status{text-align:center;font-family:'Courier Prime',monospace;color:var(--text-muted);font-size:11px;letter-spacing:1px;min-height:18px;margin-bottom:8px}
+#roulette-result{display:none}
+
+/* LinkedIn card */
+#li-card{background:#fff;border:1px solid #ddd;padding:14px;color:#1a1a1a;border-radius:4px}
+#li-avatar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+#li-avatar{width:42px;height:42px;border-radius:50%;background:#0077b5;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;overflow:hidden}
+#li-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+#li-name{font-weight:700;font-size:13px}
+#li-role-txt{font-size:11px;color:#666}
+#li-body{font-size:12px;line-height:1.6;white-space:pre-line}
+#li-tags{margin-top:8px;font-size:12px;color:#0077b5}
+#li-reactions-row{display:flex;align-items:center;gap:5px;margin-top:10px;padding-top:8px;border-top:1px solid #eee;font-size:11px;color:#666}
+
+#roulette-again-btn,#game-btn{display:none;width:100%;padding:8px;border:1px solid var(--border);background:var(--paper);color:var(--navy);font-family:'Courier Prime',monospace;font-size:11px;letter-spacing:1px;cursor:pointer;margin-top:8px;text-transform:uppercase}
+#roulette-again-btn:hover,#game-btn:hover{background:var(--navy);color:#fff}
+#game-btn{border-color:var(--green);color:var(--green)}
+#game-btn:hover{background:var(--green)}
+
+/* ── GAME OVERLAY ── */
+#game-overlay{display:none;position:fixed;inset:0;z-index:600;background:#111;align-items:center;justify-content:center;flex-direction:column}
+#game-overlay.open{display:flex}
+#game-hud{font-family:'Courier Prime',monospace;color:#e8b84b;font-size:13px;letter-spacing:2px;margin-bottom:10px;display:flex;gap:30px;background:#1a1814;padding:6px 20px;border:1px solid #e8b84b}
+#game-canvas{display:block;border:2px solid #e8b84b}
+#game-close-btn{margin-top:10px;padding:7px 20px;background:transparent;border:1px solid rgba(232,184,75,.4);color:rgba(232,184,75,.7);font-family:'Courier Prime',monospace;font-size:11px;letter-spacing:2px;cursor:pointer;text-transform:uppercase}
+#game-close-btn:hover{border-color:#e8b84b;color:#e8b84b}
+
+/* ── CLEM SAD OVERLAY ── */
+#clem-sad{display:none;position:absolute;top:0;left:0;right:0;bottom:0;pointer-events:none}
+/* Tear drop */
+#clem-tear{
+  position:absolute;
+  left:calc(50% + 18px); /* right side of face */
+  top:42%;
+  width:9px; height:18px;
+  background:#5bb8f5;
+  border-radius:50% 50% 50% 50% / 30% 30% 70% 70%;
+  opacity:0;
+  animation:tearfall 2.4s ease-in infinite;
+}
+#clem-tear::after{
+  content:'';
+  position:absolute;
+  top:-7px; left:50%;
+  transform:translateX(-50%);
+  width:9px; height:9px;
+  background:#5bb8f5;
+  border-radius:50%;
+}
+@keyframes tearfall{
+  0%{opacity:0;transform:translateY(0)}
+  15%{opacity:.9}
+  85%{opacity:.6;transform:translateY(22px)}
+  100%{opacity:0;transform:translateY(28px)}
+}
+/* Second tear with offset timing */
+#clem-tear2{
+  position:absolute;
+  left:calc(50% + 14px);
+  top:42%;
+  width:7px; height:14px;
+  background:#5bb8f5;
+  border-radius:50% 50% 50% 50% / 30% 30% 70% 70%;
+  opacity:0;
+  animation:tearfall 2.4s ease-in 1.2s infinite;
+}
+#clem-tear2::after{
+  content:'';
+  position:absolute;
+  top:-6px; left:50%;
+  transform:translateX(-50%);
+  width:7px; height:7px;
+  background:#5bb8f5;
+  border-radius:50%;
+}
+@media(max-width:600px){.forecast-day{padding:8px 3px}.forecast-icon{font-size:18px}#weather-icon-big{font-size:52px}#condition-name{font-size:1.5em}}
+</style>
 </head>
 <body>
-  <div class="clouds" id="background"></div>
-  <div class="top-bar">
-    <img src="msft-logo.gif" alt="Microsoft Logo" class="logo" />
-    <button class="change-bg-button" id="change-bg" aria-label="Change Background">🌄 Change Background</button>
+<canvas id="sky-canvas"></canvas>
+<div id="app">
+
+<!-- MASTHEAD -->
+<div id="masthead">
+  <div id="masthead-inner">
+    <div class="masthead-left">
+      <img src="msft-logo.gif" class="masthead-logo-img" alt="MSFT" onerror="this.style.display='none'">
+      <div>
+        <div class="masthead-brand">MSFT WEATHER REPORT</div>
+        <div class="masthead-tagline">Financial Meteorology Network — Est. 2024</div>
+      </div>
+    </div>
+    <div class="masthead-right">
+      <button id="theme-btn" onclick="cycleTheme()">🎨 THEME</button>
+      <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+      <div id="clock">00:00:00</div>
+    </div>
+  </div>
+</div>
+
+<!-- BREAKING -->
+<div id="breaking-banner">
+  <span class="breaking-label">BREAKING</span>
+  <span id="breaking-text">SOURCES CONFIRM: MSFT STOCK HAS MOVED AGAIN &nbsp;•&nbsp; ANALYSTS BAFFLED &nbsp;•&nbsp; ZIAD REPORTEDLY BOUGHT MORE SHARES THIS MORNING &nbsp;•&nbsp; PREPARE ACCORDINGLY &nbsp;•&nbsp;</span>
+</div>
+
+<!-- MAIN -->
+<div id="main-content">
+
+  <div id="show-title" onclick="handleTitleClick()">
+    <h1>The <span>MSFT</span> Weather Report</h1>
+    <div class="show-subtitle">Your daily stock-meteorological briefing &nbsp;·&nbsp; Powered by strong vibes &amp; questionable decisions</div>
+    <div id="title-click-hint">[ click title 5× to unlock the roulette ]</div>
   </div>
 
-  <header>
-    <h1>Microsoft Weather Report</h1>
-  </header>
+  <!-- LEFT -->
+  <div id="left-panel">
 
-  <main>
-    <section class="top-section">
-      <div class="left">
-        <div class="tradingview-widget-container">
-          <div class="tradingview-widget-container__widget"></div>
-          <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-single-quote.js" async>
-          {
-            "symbol": "NASDAQ:MSFT",
-            "colorTheme": "dark",
-            "isTransparent": false,
-            "locale": "en"
-          }
-          </script>
+    <div id="condition-display">
+      <div id="weather-icon-big">☀️</div>
+      <div id="condition-text">
+        <div id="condition-name" class="up">Sunny &amp; Bullish</div>
+        <div id="condition-desc">Clear skies ahead. Investors reported smiling at their screens. Visibility: excellent.</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0">
+        <div id="msft-live-price" style="font-family:'Courier Prime',monospace;font-size:13px;color:var(--text-muted);letter-spacing:1px">MSFT —</div>
+        <div style="font-family:'Courier Prime',monospace;font-size:9px;color:var(--text-muted);margin-top:2px;letter-spacing:1px">NASDAQ LIVE</div>
+      </div>
+    </div>
+
+    <div id="chart-panel" class="card">
+      <div class="card-header"><div class="card-header-dot"></div>LIVE CHART — NASDAQ: MSFT</div>
+      <div class="tradingview-widget-container" style="height:255px">
+        <div class="tradingview-widget-container__widget" style="height:100%"></div>
+        <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+        {"symbol":"NASDAQ:MSFT","width":"100%","height":255,"locale":"en","dateRange":"1M","colorTheme":"light","isTransparent":true,"autosize":false}
+        </script>
+      </div>
+    </div>
+
+    <div id="forecast-panel" class="card">
+      <div class="card-header"><div class="card-header-dot"></div>5-DAY FORECAST</div>
+      <div id="forecast-grid"></div>
+    </div>
+
+    <div id="poll-panel" class="card">
+      <div class="card-header"><div class="card-header-dot"></div>VIEWER POLL</div>
+      <div id="poll-question">How are you feeling about MSFT right now?</div>
+      <div id="poll-options">
+        <div class="poll-opt" onclick="castVote(0)"><span class="poll-opt-emoji">😤</span><span class="poll-opt-label">Fully in denial, holding forever</span><div class="poll-bar-wrap"><div class="poll-bar-fill" style="background:var(--green)"></div></div><span class="poll-pct"></span></div>
+        <div class="poll-opt" onclick="castVote(1)"><span class="poll-opt-emoji">📉</span><span class="poll-opt-label">Quietly panicking, telling no one</span><div class="poll-bar-wrap"><div class="poll-bar-fill" style="background:var(--red)"></div></div><span class="poll-pct"></span></div>
+        <div class="poll-opt" onclick="castVote(2)"><span class="poll-opt-emoji">☕</span><span class="poll-opt-label">Too focused on coffee to care</span><div class="poll-bar-wrap"><div class="poll-bar-fill" style="background:var(--gold)"></div></div><span class="poll-pct"></span></div>
+        <div class="poll-opt" onclick="castVote(3)"><span class="poll-opt-emoji">🚀</span><span class="poll-opt-label">Bullish. Aggressively bullish.</span><div class="poll-bar-wrap"><div class="poll-bar-fill" style="background:var(--green)"></div></div><span class="poll-pct"></span></div>
+        <div class="poll-opt" onclick="castVote(4)"><span class="poll-opt-emoji">🤷</span><span class="poll-opt-label">I don't even own MSFT, I'm just here</span><div class="poll-bar-wrap"><div class="poll-bar-fill" style="background:#5588cc"></div></div><span class="poll-pct"></span></div>
+      </div>
+      <div id="poll-thankyou"></div>
+      <div id="poll-total"></div>
+    </div>
+
+  </div>
+
+  <!-- RIGHT -->
+  <div id="right-panel">
+
+    <div id="host-card" class="card">
+      <div class="card-header"><div class="card-header-dot"></div>TONIGHT'S METEOROLOGIST</div>
+      <div id="host-image-wrap">
+        <img src="clem.jpg" alt="Host" id="host-image" onerror="handleImgErr()">
+        <div id="host-avatar-fallback">🎤</div>
+        <!-- Clem sad overlay — shown when stock is down -->
+        <div id="clem-sad">
+          <div id="clem-tear"></div>
+          <div id="clem-tear2"></div>
         </div>
       </div>
-      <div class="right">
-        <div class="host-container">
-          <img src="clem.jpg" alt="Clem the Weather Host" class="profile" id="host-image" />
-          <div class="quote" id="quote">“Let the clouds carry your worries away.”</div>
-        </div>
-        <div class="host-name" id="host-name">Hosted by Clem</div>
-        <button class="change-host-button" id="change-host" aria-label="Change Host">🎤 Change Host</button>
+      <div id="host-info">
+        <div id="host-name">Clem</div>
+        <div id="host-title">Senior Catastrophe Correspondent</div>
       </div>
-    </section>
-  </main>
+      <div id="quote-bubble"><span id="quote-text">"Let the clouds carry your worries away."</span></div>
+      <button id="tts-btn" onclick="speakQuote()"><span id="tts-label">▶ Hear the forecast</span></button>
+      <div id="host-controls">
+        <button class="btn" id="btn-change-host">↺ New Host</button>
+        <button class="btn" id="btn-new-quote">↻ New Quote</button>
+      </div>
+    </div>
 
-  <footer>
-    &copy; 2025 The MSFT Weather Team — Powered by fancy vibes and strong stocks.
-  </footer>
+    <div id="mood-panel" class="card">
+      <div class="card-header"><div class="card-header-dot"></div>OFFICE MOOD INDEX</div>
+      <div id="mood-bar-wrap">
+        <div class="mood-bar-labels"><span>PANIC</span><span>MEH</span><span>EUPHORIA</span></div>
+        <div id="mood-bar-track"><div id="mood-bar-fill"></div></div>
+        <div id="mood-emoji-row"><span>😱</span><span>😬</span><span>😐</span><span>😊</span><span>🤑</span></div>
+        <div id="mood-current">Loading sentiment...</div>
+      </div>
+    </div>
 
-  <audio id="bg-music" loop>
-    <source src="lounge-jazz-elevator.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
+  </div>
+</div>
 
-  <button id="play-toggle" aria-label="Play or Pause Music" style="position: fixed; bottom: 20px; right: 20px; z-index: 10;">
-    ▶️ Play
-  </button>
+<div id="ticker-bar"><div id="ticker-inner"></div></div>
+</div><!-- end #app -->
 
-  <script>
-    const audio = document.getElementById('bg-music');
-    const playBtn = document.getElementById('play-toggle');
-    audio.volume = 0.2;
-    let isPlaying = false;
+<!-- MUSIC PLAYER — SoundCloud Widget -->
+<div id="music-player">
+  <button id="music-play-btn" onclick="scTogglePlay()">▶</button>
+  <button id="music-skip-btn" onclick="scNext()" title="Next track">⏭</button>
+  <div id="music-info">
+    <div id="music-track">MSFT Weather Radio</div>
+    <div id="music-artist">Click ▶ to start</div>
+  </div>
+  <div id="music-progress-wrap" onclick="scSeek(event)"><div id="music-progress-fill"></div></div>
+  <input type="range" id="music-vol" min="0" max="100" value="60" oninput="scVolume(this.value)" title="Volume">
+  <select id="music-playlist-sel" onchange="scSwitchPlaylist(this.value)" style="font-family:'Courier Prime',monospace;font-size:10px;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.25);padding:3px 5px;cursor:pointer;letter-spacing:.5px">
+    <option value="0">🎷 Swing & Big Band</option>
+    <option value="1">🎵 Jazz Lounge</option>
+    <option value="2">🎸 Jazz & Blues</option>
+  </select>
+  <div id="music-status">● Standby</div>
+</div>
+<!-- Hidden SoundCloud iframe — controlled via Widget API -->
+<iframe id="sc-iframe" style="display:none" allow="autoplay"></iframe>
 
-    playBtn.addEventListener('click', () => {
-      if (isPlaying) {
-        audio.pause();
-        playBtn.textContent = '▶️ Play';
-      } else {
-        audio.play();
-        playBtn.textContent = '⏸ Pause';
+
+<!-- ROULETTE -->
+<div id="roulette-overlay">
+  <div id="roulette-modal">
+    <div id="roulette-header">
+      <span>Staff Roulette</span>
+      <button id="roulette-close" onclick="closeRoulette()">✕</button>
+    </div>
+    <div id="roulette-subtitle">🎉 You found the secret game!</div>
+    <div id="roulette-subtitle">Spin the wheel — fate decides your meteorologist</div>
+    <div id="wheel-wrap">
+      <div id="wheel-container">
+        <canvas id="wheel-canvas" width="260" height="260"></canvas>
+        <div id="wheel-pointer"></div>
+      </div>
+    </div>
+    <div id="roulette-body">
+      <div id="spin-status"></div>
+      <button id="roulette-spin-btn" onclick="spinWheel()">SPIN THE WHEEL</button>
+      <div id="roulette-result">
+        <div id="li-card">
+          <div id="li-avatar-row">
+            <div id="li-avatar"><img id="li-avatar-img" src="" alt="" onerror="this.style.display='none'"></div>
+            <div><div id="li-name"></div><div id="li-role-txt"></div></div>
+          </div>
+          <div id="li-body"></div>
+          <div id="li-tags"></div>
+          <div id="li-reactions-row"><span id="li-reacts"></span>&nbsp;<span id="li-likes"></span> likes &nbsp;·&nbsp; <span id="li-comments"></span> comments</div>
+        </div>
+      </div>
+      <button id="game-btn" onclick="launchGame()">▶ Play: Stock Catcher</button>
+      <button id="roulette-again-btn" onclick="resetRoulette()">↺ Spin Again</button>
+    </div>
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="game-overlay">
+  <div id="game-hud">
+    <span>SCORE: <span id="g-score">0</span></span>
+    <span>LIVES: <span id="g-lives">3</span></span>
+    <span>LEVEL: <span id="g-level">1</span></span>
+  </div>
+  <canvas id="game-canvas" width="400" height="500"></canvas>
+  <button id="game-close-btn" onclick="closeGame()">[ Exit Game ]</button>
+</div>
+
+
+
+<script>
+'use strict';
+
+// ─────────────────────────────────────────
+// SKY CANVAS
+// ─────────────────────────────────────────
+const skyC = document.getElementById('sky-canvas');
+const skyCtx = skyC.getContext('2d');
+let clouds=[], stars=[], drops=[], weatherMode='sunny', ltT=0, ltF=0;
+
+function resizeSky(){ skyC.width=innerWidth; skyC.height=innerHeight; }
+resizeSky(); addEventListener('resize', resizeSky);
+
+for(let i=0;i<7;i++) clouds.push({x:Math.random()*innerWidth*1.5, y:40+Math.random()*180, r:30+Math.random()*65, sp:.1+Math.random()*.2, op:.06+Math.random()*.1});
+for(let i=0;i<50;i++) stars.push({x:Math.random()*innerWidth, y:Math.random()*innerHeight*.5, r:.3+Math.random()*.9, tw:Math.random()*Math.PI*2});
+for(let i=0;i<80;i++) drops.push({x:Math.random()*innerWidth, y:Math.random()*innerHeight, sp:6+Math.random()*8, ln:8+Math.random()*12, op:.15+Math.random()*.3});
+
+function skyAnim(){
+  skyCtx.clearRect(0,0,skyC.width,skyC.height);
+  const g = skyCtx.createLinearGradient(0,0,0,skyC.height);
+  if(weatherMode==='sunny'){g.addColorStop(0,'#87ceeb');g.addColorStop(1,'#e0f4ff');}
+  else if(weatherMode==='stormy'){g.addColorStop(0,'#2a2a3a');g.addColorStop(1,'#4a4a5a');}
+  else if(weatherMode==='cloudy'){g.addColorStop(0,'#a0b0c0');g.addColorStop(1,'#c8d8e8');}
+  else{g.addColorStop(0,'#b0b8c0');g.addColorStop(1,'#d0d8e0');}
+  skyCtx.fillStyle=g; skyCtx.fillRect(0,0,skyC.width,skyC.height);
+  if(weatherMode==='sunny'){
+    const cx=skyC.width*.78, cy=60, t=Date.now()/2200;
+    for(let i=0;i<10;i++){const a=(i/10)*Math.PI*2+t,l=25+10*Math.sin(t*2+i); skyCtx.beginPath(); skyCtx.moveTo(cx+Math.cos(a)*20,cy+Math.sin(a)*20); skyCtx.lineTo(cx+Math.cos(a)*(20+l),cy+Math.sin(a)*(20+l)); skyCtx.strokeStyle='rgba(255,220,50,.3)'; skyCtx.lineWidth=2; skyCtx.stroke();}
+    skyCtx.beginPath(); skyCtx.arc(cx,cy,18,0,Math.PI*2); skyCtx.fillStyle='rgba(255,200,50,.6)'; skyCtx.fill();
+  }
+  clouds.forEach(c=>{
+    c.x+=c.sp; if(c.x>skyC.width+150) c.x=-150;
+    skyCtx.save(); skyCtx.globalAlpha=c.op*(weatherMode==='stormy'?3:1);
+    skyCtx.fillStyle=weatherMode==='stormy'?'#444':'rgba(255,255,255,.9)';
+    for(let j=0;j<5;j++){skyCtx.beginPath(); skyCtx.arc(c.x+j*c.r*.5,c.y+(j%2?-c.r*.15:0),c.r*(.5+.12*j),0,Math.PI*2); skyCtx.fill();}
+    skyCtx.restore();
+  });
+  if(weatherMode==='stormy'){
+    drops.forEach(d=>{d.y+=d.sp;d.x+=1;if(d.y>skyC.height){d.y=-15;d.x=Math.random()*skyC.width;} skyCtx.beginPath();skyCtx.moveTo(d.x,d.y);skyCtx.lineTo(d.x-2,d.y+d.ln);skyCtx.strokeStyle=`rgba(180,210,255,${d.op})`;skyCtx.lineWidth=1;skyCtx.stroke();});
+    ltT--; if(ltT<=0){ltT=160+Math.random()*220;ltF=3;} if(ltF>0){skyCtx.fillStyle=`rgba(255,255,220,${ltF*.03})`;skyCtx.fillRect(0,0,skyC.width,skyC.height);ltF--;}
+  }
+  requestAnimationFrame(skyAnim);
+}
+skyAnim();
+
+// ─────────────────────────────────────────
+// CLOCK
+// ─────────────────────────────────────────
+function tick(){ const n=new Date(); document.getElementById('clock').textContent=`${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}:${String(n.getSeconds()).padStart(2,'0')}`; }
+setInterval(tick,1000); tick();
+
+// ─────────────────────────────────────────
+// THEME
+// ─────────────────────────────────────────
+const THEMES = ['default','newsroom','green','blue'];
+const THEME_LABELS = {default:'🎨 Default', newsroom:'📰 Newsroom', green:'🌿 Forest', blue:'🔵 Ocean'};
+let themeIdx = 0;
+function cycleTheme(){
+  themeIdx = (themeIdx+1) % THEMES.length;
+  const t = THEMES[themeIdx];
+  document.documentElement.setAttribute('data-theme', t==='default'?'':t);
+  document.getElementById('theme-btn').textContent = THEME_LABELS[t];
+}
+
+// ─────────────────────────────────────────
+// CONDITIONS
+// ─────────────────────────────────────────
+let msftPrice = null; // populated by live fetch, used by Clem sad logic
+const conditions = [
+  {name:'Sunny & Bullish',icon:'☀️',mode:'sunny',cc:'up',mlo:65,mhi:95,ml:'TEAM EUPHORIA MODE',desc:'Clear skies ahead. Investors reported smiling at their screens. Visibility: excellent.',brk:'MSFT CLIMBING — OFFICE POSITIVITY AT DANGEROUS LEVELS • SUNSCREEN METAPHORICALLY ADVISED •'},
+  {name:'Partly Cloudy',icon:'⛅',mode:'cloudy',cc:'up',mlo:45,mhi:65,ml:'NERVOUS BUT HOLDING',desc:'Some uncertainty in the atmosphere. Portfolio checks every 20 minutes. Cautiously optimistic.',brk:'DIRECTION UNCLEAR — ANALYSTS ADVISE "WAIT AND SEE" • COLLECTIVELY WE WAIT •'},
+  {name:'Overcast',icon:'☁️',mode:'cloudy',cc:'flat',mlo:35,mhi:55,ml:'COLLECTIVE MEH',desc:'Heavy clouds obscure the forecast. Slack messages unusually vague. Waiting for signals.',brk:'MSFT FLAT — MARKET TAKING A PERSONAL DAY — MORE AT 11 •'},
+  {name:'Thunderstorm',icon:'⛈️',mode:'stormy',cc:'down',mlo:5,mhi:30,ml:'MASS REFRESH EVENT',desc:'Severe turbulence detected. Do not look at your portfolio until further notice. Seek shelter.',brk:'DEVELOPING: MSFT UNDER PRESSURE — EMERGENCY SLACK CHANNELS OPENED • SEVERAL SIGHS REPORTED •'},
+  {name:'Foggy & Flat',icon:'🌫️',mode:'foggy',cc:'flat',mlo:40,mhi:52,ml:'PROFOUND INDIFFERENCE',desc:'Zero visibility on market direction. Analysts using Magic 8-Ball. No further comment.',brk:'VISIBILITY NEAR ZERO — EXPERTS UNAVAILABLE — EXPERTS ALSO CONFUSED •'},
+  {name:'Rocket Launch',icon:'🚀',mode:'sunny',cc:'up',mlo:88,mhi:100,ml:'TO THE MOON, APPARENTLY',desc:'UNPRECEDENTED EVENT. Colleagues abandoning all pretense of working. Multiple screenshots.',brk:'MSFT SURGING — PEOPLE WHO HELD SUDDENLY VERY SMUG — SCREENSHOTS BEING DISTRIBUTED •'},
+  {name:'Hailstorm',icon:'🌨️',mode:'stormy',cc:'down',mlo:2,mhi:18,ml:'FULL PANIC PROTOCOL',desc:'Earnings miss. Take cover. Multiple monitors displaying red. Coffee intake at critical levels.',brk:'MSFT IN FREEFALL — HOLD MUSIC: MY HEART WILL GO ON — NOT IDEAL •'},
+  {name:'Mild & Sideways',icon:'🌤️',mode:'cloudy',cc:'flat',mlo:42,mhi:58,ml:'PRODUCTIVE DETACHMENT',desc:'The market is taking a personal day. Nothing happening. Someone made a TikTok about it.',brk:'NOTHING TO REPORT — WE ARE REPORTING IT ANYWAY — THAT\'S JOURNALISM •'},
+];
+function setCondition(i){
+  const c=conditions[i]; weatherMode=c.mode;
+  document.getElementById('weather-icon-big').textContent=c.icon;
+  const nm=document.getElementById('condition-name'); nm.textContent=c.name; nm.className=c.cc;
+  document.getElementById('condition-desc').textContent=c.desc;
+  const m=c.mlo+Math.random()*(c.mhi-c.mlo);
+  const f=document.getElementById('mood-bar-fill'); f.style.width=m.toFixed(0)+'%';
+  f.style.background=m>70?'var(--green)':m>45?'var(--gold)':'var(--red)';
+  document.getElementById('mood-current').textContent=c.ml;
+  document.getElementById('breaking-text').textContent=c.brk;
+  // Show Clem's sad face when it's a down/stormy condition and Clem is active
+  updateClemSad(c.cc);
+}
+
+function updateClemSad(cc){
+  const isClem = (hosts[curHost].name === 'Clem');
+  const priceIsBad = (msftPrice !== null && msftPrice < 400);
+  const isSad = (cc === 'down') || priceIsBad;
+  document.getElementById('clem-sad').style.display = (isClem && isSad) ? 'block' : 'none';
+}
+
+// ─────────────────────────────────────────
+// FORECAST
+// ─────────────────────────────────────────
+const fdays=[{d:'MON',ic:['☀️','⛅']},{d:'TUE',ic:['⛈️','⛅']},{d:'WED',ic:['🌤️','☁️']},{d:'THU',ic:['☀️','🌨️']},{d:'FRI',ic:['⛅','🌫️']}];
+const fdescs=['Earnings vibes','AI hype day','Fed jitters','Analyst note','Recovery attempt','Midweek malaise','Outlook improved','Dip. Just a dip.','Friday energy','Sideways drama'];
+function renderForecast(){
+  document.getElementById('forecast-grid').innerHTML = fdays.map(d=>{
+    const cl=Math.random()>.38?'up':Math.random()>.5?'down':'flat';
+    const sign=cl==='down'?'-':cl==='flat'?'±':'+';
+    const num=(Math.random()*2.5+.05).toFixed(1);
+    const icon=d.ic[Math.floor(Math.random()*d.ic.length)];
+    const desc=fdescs[Math.floor(Math.random()*fdescs.length)];
+    return `<div class="forecast-day"><div class="forecast-day-name">${d.d}</div><span class="forecast-icon">${icon}</span><div class="forecast-desc">${desc}</div><div class="forecast-move ${cl}">${sign}${num}%</div></div>`;
+  }).join('');
+}
+renderForecast();
+
+// ─────────────────────────────────────────
+// HOSTS
+// ─────────────────────────────────────────
+const hosts = [
+  {name:'Clem', title:'Senior Catastrophe Correspondent', img:'clem.jpg',
+   vp:0.78, vr:0.82,  // slow, low — world-weary
+   quotes:['"It\'s up today. Which means it\'ll come down. It always comes down. I\'ve seen things."','"Sure, the chart looks great. That\'s what they said last time. I remember last time."','"Green day. Enjoy it. Statistically, something terrible is due."','"I\'m not pessimistic. I\'m just pre-disappointed to save time."','"The sky is clear. The sky was also clear the day before the correction. Just saying."','"Up 2%. We lose that and more before my coffee gets cold. Mark my words."','"Oh good, it\'s recovering. Can\'t wait to watch it give all of that back by Thursday."','"Technically, everything is fine. Technically, the Titanic was also fine. For a while."']},
+  {name:'Leo', title:'Chief Reality Check Officer', img:'leo.jpg',
+   vp:1.0, vr:0.92,   // measured, neutral
+   quotes:['"It went up. It went down. It will do one of those things again tomorrow."','"Historically, markets recover. Historically, that takes longer than you want."','"This is either a great entry point or a value trap. Both are possible."','"The chart shows momentum. Momentum ends. That\'s what momentum does."','"Could be worse. Could be better. Likely to be one of those."','"Anyone who says they know where this is going is either lying or selling something."','"Current price reflects current sentiment. Sentiment is not a business plan."','"I\'m not saying don\'t invest. I\'m saying understand what you\'re doing. There\'s a difference."']},
+  {name:'Chris', title:'Director of Positive Atmospheric Events', img:'chris.jpg',
+   vp:1.3, vr:1.15,   // high pitch, fast — over-caffeinated
+   quotes:['"Another day, another opportunity! Did you see that bounce? BEAUTIFUL."','"Look, yes it dipped. But have you considered: it could go back up? It really could!"','"I genuinely believe today is a great day for MSFT. I also believed that yesterday. Consistency!"','"The fundamentals are strong, the team is amazing, and I refuse to check after 3pm."','"Every red day is just a green day that hasn\'t happened yet. I cross-stitched that on a pillow."','"You know what this chart reminds me of? A smile. If you tilt your head. And squint."','"Rough morning but I\'m choosing to interpret this as a healthy reset. Very healthy. Very reset."','"Satya is out here building the future and I for one am extremely here for it. Let\'s GO."']},
+  {name:'Zach', title:'Atmospheric Sentiment Reporter', img:'zach.jpg',
+   vp:1.05, vr:0.98,  // slightly higher, normal pace — smooth
+   quotes:['"It\'s windy out there — both literally and in the options market."','"Zach recommends: sunglasses, snacks, and a diversified portfolio."','"Drama in the skies, drama on the chart. Zach is thriving, as always."','"I love weather with a little edge to it. The market delivers every single time."','"You can\'t control the wind, but you can adjust your sails. And your stop-loss."','"The volatility today is giving. The volatility is really giving."','"Never short a company whose products you use to short it."','"Chart looks like abstract art. I say that as a compliment to both."']},
+  {name:'Ray', title:'Probabilistic Forecast Director', img:'ray.jpg',
+   vp:0.88, vr:0.88,  // deep, deliberate
+   quotes:['"Expect the unexpected. Ray has been expecting it since 2019."','"Ray\'s forecast: optimistic, heavily caveated, non-binding."','"The model says up. The other model says down. Ray says: update your priors."','"Nothing about this is surprising if you zoom out far enough. Try really far out."','"Ray assigns a 68% probability to this sentence being correct."','"The distribution of outcomes is wide. Act accordingly. Or don\'t."','"Ray would like to remind you that past performance does not indicate future results."','"Technically the most likely outcome is the one that hasn\'t happened yet. Good luck."']},
+  {name:'Ziad', title:'Self-Appointed Market Influencer', img:'ziad.jpg',
+   vp:1.18, vr:1.18,  // fast and confident — everything is certain
+   quotes:['"I just bought more. Which means it\'s about to go down. You\'re welcome, short sellers."','"Every time I stop buying it starts climbing. I am the market. I am the weather."','"It went down again. I checked my brokerage. I had bought this morning. Classic Ziad effect."','"My strategy is simple: buy until it drops, stop buying, watch it moon, repeat. Patent pending."','"I don\'t follow the market. The market follows me. Mostly in the wrong direction but still."','"The dip is a gift. I am both the giver and the receiver of this gift. Somehow."','"Financial analysts study charts. I study my own purchasing history. Same thing basically."','"One day the market will learn to work WITH me instead of against me. Today is not that day."']},
+];
+
+let curHost = 0;
+function setHost(idx, anim){
+  const h=hosts[idx];
+  const img=document.getElementById('host-image');
+  stopTTS();
+  if(anim){ img.style.opacity='0'; setTimeout(()=>{ img.src=h.img; img.style.opacity='1'; document.getElementById('host-avatar-fallback').style.display='none'; img.style.display='block'; },270); }
+  else img.src=h.img;
+  document.getElementById('host-name').textContent=h.name;
+  document.getElementById('host-title').textContent=h.title;
+  setQuote(idx);
+  // Re-evaluate sad overlay whenever host changes
+  const curCc = document.getElementById('condition-name').className;
+  updateClemSad(curCc);
+}
+function setQuote(idx){
+  const q=hosts[idx].quotes[Math.floor(Math.random()*hosts[idx].quotes.length)];
+  const el=document.getElementById('quote-text'); el.style.opacity='0';
+  setTimeout(()=>{ el.textContent=q; el.style.opacity='1'; },180);
+}
+function handleImgErr(){ document.getElementById('host-image').style.display='none'; document.getElementById('host-avatar-fallback').style.display='flex'; }
+document.getElementById('btn-change-host').addEventListener('click',()=>{ curHost=(curHost+1)%hosts.length; setHost(curHost,true); });
+document.getElementById('btn-new-quote').addEventListener('click',()=>{ stopTTS(); setQuote(curHost); });
+
+// ─────────────────────────────────────────
+// TTS — WEB SPEECH, PITCH/RATE TONES ONLY
+// Each host has a very distinct profile; no voice hunting, works everywhere
+// ─────────────────────────────────────────
+// Profiles: [pitch, rate, volume]
+// Clem:  0.6 pitch, 0.78 rate — slow, low, world-weary
+// Leo:   1.0 pitch, 0.95 rate — flat, measured
+// Chris: 1.6 pitch, 1.22 rate — high, fast, excitable
+// Zach:  1.1 pitch, 1.05 rate — smooth, confident
+// Ray:   0.75 pitch, 0.85 rate — deep, deliberate
+// Ziad:  1.25 pitch, 1.3 rate  — fast, very sure of himself
+
+function stopTTS(){
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+  const b=document.getElementById('tts-btn'); b.classList.remove('speaking');
+  document.getElementById('tts-label').textContent='▶ Hear the forecast';
+}
+
+function speakQuote(){
+  if(!('speechSynthesis' in window)){ alert('TTS not supported in this browser.'); return; }
+  if(speechSynthesis.speaking){ stopTTS(); return; }
+  const h=hosts[curHost];
+  const txt=document.getElementById('quote-text').textContent.replace(/["""]/g,'');
+  const u=new SpeechSynthesisUtterance(txt);
+  u.pitch=h.vp;
+  u.rate=h.vr;
+  u.volume=0.92;
+  // No voice assignment — let browser use default, shaped purely by pitch+rate
+  const b=document.getElementById('tts-btn');
+  u.onstart=()=>{ b.classList.add('speaking'); document.getElementById('tts-label').innerHTML='<span class="tts-wave"><span></span><span></span><span></span><span></span><span></span></span> Speaking...'; };
+  u.onend=u.onerror=()=>stopTTS();
+  speechSynthesis.speak(u);
+}
+
+// ─────────────────────────────────────────
+// POLL
+// ─────────────────────────────────────────
+let pvotes=[47,63,38,29,84], voted=false;
+const pthanks=[['"Denial is a valid investment strategy." — Clem','#eef8f2'],['"Statistically sound." — Leo','#fff0f0'],['"GREAT CHOICE! Love the energy!" — Chris','#fffbea'],['"Bold. Respect." — Zach','#eef8f2'],['"Deeply relatable." — Ray','#eef2ff']];
+function castVote(i){
+  if(voted) return; voted=true; pvotes[i]++;
+  const tot=pvotes.reduce((a,b)=>a+b,0);
+  document.querySelectorAll('.poll-opt').forEach((o,j)=>{
+    const p=Math.round((pvotes[j]/tot)*100);
+    o.style.cursor='default';
+    o.querySelector('.poll-bar-wrap').style.display='block';
+    setTimeout(()=>{ o.querySelector('.poll-bar-fill').style.width=p+'%'; },50);
+    const pe=o.querySelector('.poll-pct'); pe.style.display='block'; pe.textContent=p+'%';
+    if(j!==i) o.style.opacity='.6';
+  });
+  const [m,bg]=pthanks[i];
+  const ty=document.getElementById('poll-thankyou'); ty.style.display='block'; ty.style.background=bg; ty.textContent=m;
+  document.getElementById('poll-total').style.display='block';
+  document.getElementById('poll-total').textContent=`${tot.toLocaleString()} viewers have weighed in`;
+}
+
+// ─────────────────────────────────────────
+// TICKER
+// ─────────────────────────────────────────
+const ticks=[['MSFT','Moving in mysterious ways, not unlike a weather system'],['ALERT','Someone refreshed their brokerage app 14 times since 9am'],['MSFT','Satya Nadella reportedly "aware of market conditions"'],['WEATHER','Partly cloudy with a high chance of Discord notifications'],['AZURE','Still up. Still reliable. Still not as fun as this website.'],['BREAKING','Coffee machine usage up 40% on red portfolio days'],['ZIAD','Sources confirm Ziad bought more shares this morning. Prepare accordingly.'],['FORECAST','High pressure from Redmond, low pressure in your Roth IRA'],['COPILOT','Copilot asked for stock tips. Copilot declined. Copilot is smarter than us.'],['ALERT','Zoom call scheduled to discuss whether to schedule a Zoom call'],['ZIAD','Ziad has stopped buying. Market expected to rally imminently.'],['LIHA','LIHA review approaching. Atmosphere described as "tense but professional".'],['RSC','RSC meeting rescheduled. Mercury is in retrograde.'],['CAREER HUB','Career Hub reports spike in profile updates on red market days.'],['ZIAD','The Ziad Effect: peer-reviewed, statistically significant, deeply personal']];
+document.getElementById('ticker-inner').innerHTML=ticks.map(([t,s])=>`<span class="ticker-item"><span class="tag">[${t}]</span>${s}</span>`).join('');
+
+// ─────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────
+setCondition(0); setHost(0,false); fetchMSFTPrice();
+setInterval(()=>{ setCondition(Math.floor(Math.random()*conditions.length)); renderForecast(); },45000);
+
+// ─────────────────────────────────────────
+// TITLE CLICK → ROULETTE
+// ─────────────────────────────────────────
+let tclicks=0, tcTimer=null;
+function handleTitleClick(){
+  tclicks++;
+  const h=document.getElementById('title-click-hint');
+  h.classList.add('lit'); h.textContent=`[ ${tclicks}/5 — keep going... ]`;
+  clearTimeout(tcTimer);
+  tcTimer=setTimeout(()=>{ tclicks=0; h.classList.remove('lit'); h.textContent='[ click title 5× to unlock the roulette ]'; },3000);
+  if(tclicks>=5){ tclicks=0; clearTimeout(tcTimer); h.classList.remove('lit'); h.textContent='[ click title 5× to unlock the roulette ]'; openRoulette(); }
+}
+
+// ─────────────────────────────────────────
+// SPINNING WHEEL ROULETTE
+// ─────────────────────────────────────────
+const WC = document.getElementById('wheel-canvas');
+const WX = WC.getContext('2d');
+const WR=124, WCX=130, WCY=130;
+
+// Distinct slice colors per host
+const SLICE_FILLS  =['#1a2744','#2a6b3a','#c8962c','#8b1a1a','#1a4a6b','#6b1a4a'];
+const SLICE_TEXTS  =['#e8d080','#a0f080','#fff8c0','#ffaaaa','#aaddff','#ffaadd'];
+
+// Load host images into DOM img elements (no crossOrigin — local file safe)
+const hostImgEls = {};
+hosts.forEach((h,i)=>{
+  const im=new Image();
+  im.onload=()=>{ hostImgEls[i]=im; drawWheel(); };
+  im.onerror=()=>{ hostImgEls[i]=null; };
+  im.src=h.img;
+});
+
+let wheelAngle=0, wheelSpinning=false, wheelChosenIdx=0;
+
+function drawWheel(){
+  WX.clearRect(0,0,260,260);
+  const n=hosts.length;
+  const sliceAng=(2*Math.PI)/n;
+
+  hosts.forEach((h,i)=>{
+    const start=wheelAngle + i*sliceAng;
+    const end=start+sliceAng;
+    const mid=start+sliceAng/2;
+
+    // Slice background
+    WX.beginPath(); WX.moveTo(WCX,WCY); WX.arc(WCX,WCY,WR,start,end); WX.closePath();
+    WX.fillStyle=SLICE_FILLS[i%SLICE_FILLS.length]; WX.fill();
+    WX.strokeStyle='rgba(255,255,255,.3)'; WX.lineWidth=1.5; WX.stroke();
+
+    // Face photo (circular clip, positioned in outer part of slice)
+    const faceR=26;
+    const faceX=WCX+Math.cos(mid)*(WR*.6);
+    const faceY=WCY+Math.sin(mid)*(WR*.6);
+    WX.save();
+    WX.beginPath(); WX.arc(faceX,faceY,faceR,0,Math.PI*2); WX.clip();
+    if(hostImgEls[i]){
+      WX.drawImage(hostImgEls[i], faceX-faceR, faceY-faceR, faceR*2, faceR*2);
+    } else {
+      WX.fillStyle=SLICE_FILLS[i%SLICE_FILLS.length]; WX.fillRect(faceX-faceR,faceY-faceR,faceR*2,faceR*2);
+      WX.fillStyle='rgba(255,255,255,.6)'; WX.font='20px serif'; WX.textAlign='center'; WX.textBaseline='middle'; WX.fillText('👤',faceX,faceY);
+    }
+    WX.restore();
+
+    // Face ring
+    WX.beginPath(); WX.arc(faceX,faceY,faceR,0,Math.PI*2);
+    WX.strokeStyle='rgba(255,255,255,.6)'; WX.lineWidth=1.5; WX.stroke();
+
+    // Name label (inner, near center)
+    WX.save();
+    WX.translate(WCX,WCY); WX.rotate(mid);
+    WX.fillStyle=SLICE_TEXTS[i%SLICE_TEXTS.length];
+    WX.font='bold 8px Courier Prime, monospace';
+    WX.textAlign='center'; WX.textBaseline='middle';
+    WX.fillText(h.name, WR*.88, 0);
+    WX.restore();
+  });
+
+  // Centre hub
+  WX.beginPath(); WX.arc(WCX,WCY,16,0,Math.PI*2);
+  WX.fillStyle='#1a2744'; WX.fill();
+  WX.strokeStyle='#c8962c'; WX.lineWidth=2; WX.stroke();
+  WX.fillStyle='#e8d080'; WX.font='bold 8px Courier Prime, monospace';
+  WX.textAlign='center'; WX.textBaseline='middle'; WX.fillText('MSFT',WCX,WCY);
+}
+drawWheel();
+
+function spinWheel(){
+  if(wheelSpinning) return;
+  wheelSpinning=true;
+  document.getElementById('roulette-spin-btn').disabled=true;
+  document.getElementById('roulette-result').style.display='none';
+  document.getElementById('game-btn').style.display='none';
+  document.getElementById('roulette-again-btn').style.display='none';
+  document.getElementById('spin-status').textContent='Spinning...';
+
+  // Pick winner FIRST
+  const winner=Math.floor(Math.random()*hosts.length);
+  wheelChosenIdx=winner;
+
+  // How many full rotations + land on winner's slice midpoint at pointer (top = -PI/2)
+  const n=hosts.length;
+  const sliceAng=(2*Math.PI)/n;
+  // Winner's midpoint in absolute terms when wheel is at angle 0
+  const winnerMid=winner*sliceAng + sliceAng/2;
+  // We want wheelAngle such that winnerMid + wheelAngle ≡ -PI/2 (mod 2PI) → pointer at top
+  // i.e. wheelAngle = -PI/2 - winnerMid + k*2PI for some integer k
+  const targetAngle = -Math.PI/2 - winnerMid;
+  // Add 5 full extra rotations for drama, normalise to current position
+  const extraSpins=5*Math.PI*2;
+  const currentNorm = ((wheelAngle%(2*Math.PI))+2*Math.PI)%(2*Math.PI);
+  const targetNorm  = ((targetAngle%(2*Math.PI))+2*Math.PI)%(2*Math.PI);
+  const delta = ((targetNorm-currentNorm)+2*Math.PI)%(2*Math.PI);
+  const totalSpin = extraSpins + delta;
+  const endAngle  = wheelAngle + totalSpin;
+
+  // Easing spin using requestAnimationFrame
+  const duration=4200; // ms
+  const startAngle=wheelAngle;
+  const startTime=performance.now();
+
+  function easeOut(t){ return 1-Math.pow(1-t,4); }
+
+  function spinFrame(now){
+    const elapsed=now-startTime;
+    const t=Math.min(elapsed/duration,1);
+    wheelAngle=startAngle+totalSpin*easeOut(t);
+    drawWheel();
+    if(t<1){
+      requestAnimationFrame(spinFrame);
+    } else {
+      wheelAngle=endAngle;
+      drawWheel();
+      wheelSpinning=false;
+      onWheelLanded(winner);
+    }
+  }
+  requestAnimationFrame(spinFrame);
+}
+
+function onWheelLanded(idx){
+  document.getElementById('spin-status').textContent=`▶ ${hosts[idx].name} has been selected!`;
+  showLinkedInPost(idx);
+  document.getElementById('roulette-result').style.display='block';
+  document.getElementById('game-btn').style.display='block';
+  document.getElementById('game-btn').textContent=`▶ Play: Catch Stocks as ${hosts[idx].name}`;
+  document.getElementById('roulette-again-btn').style.display='block';
+}
+
+function resetRoulette(){
+  document.getElementById('roulette-spin-btn').disabled=false;
+  document.getElementById('roulette-result').style.display='none';
+  document.getElementById('game-btn').style.display='none';
+  document.getElementById('roulette-again-btn').style.display='none';
+  document.getElementById('spin-status').textContent='';
+  // NOTE: wheelSpinning is already false at this point (set in spinFrame)
+}
+
+function openRoulette(){
+  resetRoulette();
+  drawWheel();
+  document.getElementById('roulette-overlay').classList.add('open');
+}
+function closeRoulette(){
+  document.getElementById('roulette-overlay').classList.remove('open');
+}
+
+// Random auto-popup 2–4 min after load
+setTimeout(openRoulette, 120000+Math.random()*120000);
+
+// ─────────────────────────────────────────
+// LINKEDIN POST
+// ─────────────────────────────────────────
+const liTemplates=[
+  (h,c)=>`Folks,\n\nI've been in financial meteorology for ${7+Math.floor(Math.random()*8)} years. I've seen bull markets. I've seen bear markets. I've seen ${c.name.toLowerCase()}.\n\nToday, MSFT is ${c.cc==='up'?'up':'down'}. I want you to sit with that.\n\nNot because it means anything. But because it will mean something different tomorrow, and you should be emotionally prepared for that.\n\nStay weathered, friends.`,
+  (h,c)=>`Hot take: ${c.name} conditions in the MSFT chart today.\n\n✅ The stock exists\n✅ It has a price\n${c.cc==='up'?'✅':'❌'} That price is higher than yesterday\n\nMy analysis: this is consistent with a stock that trades.\n\nI've helped 0 people make financial decisions and I intend to keep that streak alive.`,
+  (h,c)=>`Good morning, LinkedIn family!! 🌟\n\n${c.icon} The weather today is ${c.name.toLowerCase()} AND MSFT is reflecting that energy!!!\n\nDo I have a finance degree? No.\nDo I have CONVICTION? Yes.\n\nEvery red candle ends with a green one. Eventually.\n\nLet's GOOOOO 🚀🚀🚀\n\nP.S. Not financial advice, just vibes.`,
+  (h,c)=>`The market speaks in whispers.\n\nToday's whisper: ${c.name}.\n\nI stood at my standing desk at 4:47am and looked at the pre-market data. The numbers told a ${c.cc==='up'?'feel-good':'literary fiction'} story.\n\nIf you know, you know.`,
+  (h,c)=>`Probability update:\n\nBase case (${45+Math.floor(Math.random()*20)}%): ${c.name}\nBull case (${15+Math.floor(Math.random()*15)}%): Rocket Launch\nBear case (${10+Math.floor(Math.random()*15)}%): Hailstorm\nZiad case (100%): depends when he buys\n\nDisclosure: I have no idea.`,
+  (h,c)=>`Real talk, LinkedIn.\n\nI bought more MSFT shares this morning.\n\nThirty minutes later: ${c.cc==='down'?'it dropped':'it dropped anyway, just slightly less'}.\n\nThis is the 7th time. I believe in this company. The company does not believe in my timing.\n\nLet's see how this plays out.`,
+];
+const liTags=['#MSFT #StocksAndWeather #FinancialMeteorologist','#Investing #NotFinancialAdvice #LIHA #RSC','#MSFT #Copilot #CareerHub #Azure','#FinanceTwitter #MSFTWeather #Satya'];
+function showLinkedInPost(hostIdx){
+  const h=hosts[hostIdx]; const c=conditions[Math.floor(Math.random()*conditions.length)];
+  const tmpl=liTemplates[hostIdx%liTemplates.length];
+  document.getElementById('li-avatar-img').src=h.img;
+  document.getElementById('li-name').textContent=h.name+' • MSFT Weather';
+  document.getElementById('li-role-txt').textContent=h.title+' • Financial Meteorology Network';
+  document.getElementById('li-body').textContent=tmpl(h,c);
+  document.getElementById('li-tags').textContent=liTags[hostIdx%liTags.length];
+  document.getElementById('li-reacts').textContent=['👍🤣🔥','💡❤️🚀','🤔😮💪'][Math.floor(Math.random()*3)];
+  document.getElementById('li-likes').textContent=(Math.floor(Math.random()*800+40)).toLocaleString();
+  document.getElementById('li-comments').textContent=Math.floor(Math.random()*80+5);
+}
+
+// ─────────────────────────────────────────
+// STOCK CATCHER GAME
+// ─────────────────────────────────────────
+const GC=document.getElementById('game-canvas'), GX=GC.getContext('2d');
+const GW=400, GH=500;
+let gameActive=false, gameHostIdx=0, gameHostImg=null;
+let gScore=0, gLives=3, gLevel=1, gItems=[], gSpawnTimer=0, gPlayerX=GW/2;
+let gKeys={}, gAnimFrame=null;
+
+const GOOD=[
+  {label:'MSFT',color:'#2a6b3a',pts:10,w:40,h:22},
+  {label:'COPILOT',color:'#1a4a8a',pts:15,w:54,h:22},
+  {label:'AZURE',color:'#0078d4',pts:12,w:42,h:22},
+  {label:'LIHA',color:'#5a8a2a',pts:20,w:38,h:22},
+  {label:'RSC',color:'#c8962c',pts:18,w:32,h:22},
+  {label:'CAREER HUB',color:'#8a4a1a',pts:25,w:76,h:22},
+  {label:'📈',color:'#2a6b3a',pts:8,w:32,h:32,isEmoji:true},
+];
+const BAD=[
+  {label:'📉',color:'#b91c1c',pts:-15,w:32,h:32,dmg:true,isEmoji:true},
+  {label:'RED DAY',color:'#b91c1c',pts:-10,w:58,h:22,dmg:true},
+  {label:'CORRECTION',color:'#991a1a',pts:-20,w:76,h:22,dmg:true},
+  {label:'SELL-OFF',color:'#aa2020',pts:-12,w:56,h:22,dmg:true},
+];
+const PW=70, PH=54;
+
+function launchGame(){
+  const idx=wheelChosenIdx;
+  closeRoulette();
+  setTimeout(()=>{
+    gameHostIdx=idx;
+    gameHostImg=hostImgEls[gameHostIdx]||null;
+    gScore=0; gLives=3; gLevel=1; gItems=[]; gSpawnTimer=0; gPlayerX=GW/2;
+    document.getElementById('g-score').textContent='0';
+    document.getElementById('g-lives').textContent='3';
+    document.getElementById('g-level').textContent='1';
+    document.getElementById('game-overlay').classList.add('open');
+    gameActive=true;
+    document.addEventListener('keydown',gKeyDown);
+    document.addEventListener('keyup',gKeyUp);
+    GC.addEventListener('mousemove',gMouseMove);
+    GC.addEventListener('touchmove',gTouchMove,{passive:false});
+    if(gAnimFrame) cancelAnimationFrame(gAnimFrame);
+    gLoop();
+  },250);
+}
+
+function closeGame(){
+  gameActive=false;
+  if(gAnimFrame){ cancelAnimationFrame(gAnimFrame); gAnimFrame=null; }
+  document.getElementById('game-overlay').classList.remove('open');
+  document.removeEventListener('keydown',gKeyDown);
+  document.removeEventListener('keyup',gKeyUp);
+  GC.removeEventListener('mousemove',gMouseMove);
+  GC.removeEventListener('touchmove',gTouchMove);
+}
+
+function gKeyDown(e){ gKeys[e.key]=true; }
+function gKeyUp(e){ gKeys[e.key]=false; }
+function gMouseMove(e){ const r=GC.getBoundingClientRect(); gPlayerX=e.clientX-r.left; }
+function gTouchMove(e){ e.preventDefault(); const r=GC.getBoundingClientRect(); gPlayerX=e.touches[0].clientX-r.left; }
+
+function gLoop(){
+  if(!gameActive) return;
+  gAnimFrame=requestAnimationFrame(gLoop);
+
+  // Move paddle
+  if(gKeys['ArrowLeft']||gKeys['a']||gKeys['A']) gPlayerX-=5;
+  if(gKeys['ArrowRight']||gKeys['d']||gKeys['D']) gPlayerX+=5;
+  gPlayerX=Math.max(PW/2, Math.min(GW-PW/2, gPlayerX));
+
+  // Spawn items
+  gSpawnTimer--;
+  const spawnRate=Math.max(25, 55-gLevel*4);
+  if(gSpawnTimer<=0){
+    gSpawnTimer=spawnRate+Math.floor(Math.random()*18);
+    const pool=[...GOOD,...GOOD,...BAD];
+    const tpl=pool[Math.floor(Math.random()*pool.length)];
+    gItems.push({...tpl, x:20+Math.random()*(GW-40), y:-30, vy:1.8+Math.random()*1.4+gLevel*.3});
+  }
+
+  // Update & check collisions
+  const py=GH-70;
+  gItems=gItems.filter(it=>{
+    it.y+=it.vy;
+    const hit = it.y+it.h > py && it.y < py+PH && it.x+it.w/2 > gPlayerX-PW/2 && it.x-it.w/2 < gPlayerX+PW/2;
+    if(hit){
+      if(it.dmg){ gLives--; document.getElementById('g-lives').textContent=gLives; if(gLives<=0) endGame(); }
+      else { gScore+=it.pts*gLevel; document.getElementById('g-score').textContent=gScore; gLevel=1+Math.floor(gScore/200); document.getElementById('g-level').textContent=gLevel; }
+      return false;
+    }
+    if(it.y>GH+10){
+      if(!it.dmg){ gLives--; document.getElementById('g-lives').textContent=gLives; if(gLives<=0) endGame(); }
+      return false;
+    }
+    return true;
+  });
+
+  // Draw background
+  GX.fillStyle='#f5f2ec'; GX.fillRect(0,0,GW,GH);
+  // Grid
+  GX.strokeStyle='rgba(0,0,0,.05)'; GX.lineWidth=1;
+  for(let y=0;y<GH;y+=40){GX.beginPath();GX.moveTo(0,y);GX.lineTo(GW,y);GX.stroke();}
+  for(let x=0;x<GW;x+=40){GX.beginPath();GX.moveTo(x,0);GX.lineTo(x,GH);GX.stroke();}
+
+  // Items
+  gItems.forEach(it=>{
+    if(it.isEmoji){
+      GX.font=`${it.h}px serif`; GX.textAlign='center'; GX.textBaseline='middle';
+      GX.fillText(it.label, it.x, it.y+it.h/2);
+    } else {
+      GX.fillStyle=it.dmg?'rgba(180,30,30,.12)':'rgba(30,100,50,.1)';
+      GX.fillRect(it.x-it.w/2, it.y, it.w, it.h);
+      GX.strokeStyle=it.color; GX.lineWidth=2; GX.strokeRect(it.x-it.w/2, it.y, it.w, it.h);
+      GX.fillStyle=it.color; GX.font='bold 10px Courier Prime, monospace';
+      GX.textAlign='center'; GX.textBaseline='middle'; GX.fillText(it.label, it.x, it.y+it.h/2);
+    }
+  });
+
+  // Paddle (circular host face)
+  const pyy=GH-70;
+  GX.save();
+  GX.beginPath(); GX.arc(gPlayerX, pyy+PH/2, PW/2, 0, Math.PI*2); GX.clip();
+  if(gameHostImg){
+    GX.drawImage(gameHostImg, gPlayerX-PW/2, pyy, PW, PH);
+  } else {
+    GX.fillStyle='#1a2744'; GX.fill();
+    GX.fillStyle='rgba(255,255,255,.6)'; GX.font='28px serif'; GX.textAlign='center'; GX.textBaseline='middle'; GX.fillText('🎤',gPlayerX,pyy+PH/2);
+  }
+  GX.restore();
+  GX.beginPath(); GX.arc(gPlayerX, pyy+PH/2, PW/2, 0, Math.PI*2);
+  GX.strokeStyle='#1a2744'; GX.lineWidth=3; GX.stroke();
+
+  // Lives
+  for(let i=0;i<3;i++){
+    GX.fillStyle=i<gLives?'#b91c1c':'rgba(180,30,30,.2)';
+    GX.font='18px serif'; GX.textAlign='left'; GX.textBaseline='middle';
+    GX.fillText('♥', 10+i*24, GH-12);
+  }
+  // Floor line
+  GX.strokeStyle='rgba(26,39,68,.15)'; GX.lineWidth=1;
+  GX.beginPath(); GX.moveTo(0,GH-14); GX.lineTo(GW,GH-14); GX.stroke();
+}
+
+function endGame(){
+  gameActive=false;
+  if(gAnimFrame){ cancelAnimationFrame(gAnimFrame); gAnimFrame=null; }
+  GX.fillStyle='rgba(245,242,236,.92)'; GX.fillRect(0,0,GW,GH);
+  GX.fillStyle='#1a2744'; GX.font='bold 28px Playfair Display, Georgia, serif';
+  GX.textAlign='center'; GX.textBaseline='middle'; GX.fillText('GAME OVER',GW/2,GH/2-40);
+  GX.fillStyle='#c8962c'; GX.font='bold 18px Courier Prime, monospace';
+  GX.fillText(`Final Score: ${gScore}`,GW/2,GH/2);
+  GX.fillStyle='#5a5248'; GX.font='13px Courier Prime, monospace';
+  GX.fillText(`${hosts[gameHostIdx].name} tried their best`,GW/2,GH/2+34);
+  GX.fillText('[ Exit Game ] to continue',GW/2,GH/2+56);
+}
+
+// ─────────────────────────────────────────
+// MUSIC — SoundCloud Widget API
+// No API key needed — works with any public SC playlist URL
+// ─────────────────────────────────────────
+const SC_PLAYLISTS = [
+  'https://soundcloud.com/mmpearl11/sets/swing-jazz-big-band',
+  'https://soundcloud.com/relaxmusicrecords/sets/lounge-jazz-bar-cafe',
+  'https://soundcloud.com/full-spectrum-scoring/sets/jazz-swing-big-band-new-orleans',
+];
+
+let scWidget = null;
+let scReady  = false;
+let scPlaying = false;
+let scCurrentPlaylist = 0;
+
+function scBuildSrc(playlistUrl){
+  return `https://w.soundcloud.com/player/?url=${encodeURIComponent(playlistUrl)}&color=%23c8962c&auto_play=false&hide_related=true&show_comments=false&show_user=false&show_reposts=false&show_teaser=false&visual=false`;
+}
+
+function scInit(playlistIdx){
+  scReady = false;
+  const iframe = document.getElementById('sc-iframe');
+  iframe.src = scBuildSrc(SC_PLAYLISTS[playlistIdx]);
+
+  // Load SoundCloud Widget API script if not already loaded
+  if(!window.SC){
+    const s = document.createElement('script');
+    s.src = 'https://w.soundcloud.com/player/api.js';
+    s.onload = () => scBind();
+    document.head.appendChild(s);
+  } else {
+    scBind();
+  }
+}
+
+function scBind(){
+  scWidget = SC.Widget(document.getElementById('sc-iframe'));
+  scWidget.bind(SC.Widget.Events.READY, () => {
+    scReady = true;
+    scWidget.setVolume(parseInt(document.getElementById('music-vol').value));
+    document.getElementById('music-artist').textContent = 'Ready — click ▶ to play';
+  });
+  scWidget.bind(SC.Widget.Events.PLAY, () => {
+    scPlaying = true;
+    document.getElementById('music-play-btn').textContent = '⏸';
+    document.getElementById('music-status').textContent = '♪ On Air';
+    scWidget.getCurrentSound(s => {
+      if(s){ document.getElementById('music-track').textContent = s.title || 'Jazz Track'; document.getElementById('music-artist').textContent = s.user?.username || 'SoundCloud'; }
+    });
+  });
+  scWidget.bind(SC.Widget.Events.PAUSE, () => {
+    scPlaying = false;
+    document.getElementById('music-play-btn').textContent = '▶';
+    document.getElementById('music-status').textContent = '● Paused';
+  });
+  scWidget.bind(SC.Widget.Events.FINISH, () => { scNext(); });
+  scWidget.bind(SC.Widget.Events.PLAY_PROGRESS, data => {
+    if(data.loadedProgress){
+      const pct = (data.relativePosition * 100).toFixed(1);
+      document.getElementById('music-progress-fill').style.width = pct + '%';
+    }
+  });
+}
+
+function scTogglePlay(){
+  if(!scReady){ scInit(scCurrentPlaylist); return; }
+  if(scPlaying){ scWidget.pause(); } else { scWidget.play(); }
+}
+function scNext(){ if(scReady) scWidget.next(); }
+function scVolume(v){ if(scReady) scWidget.setVolume(parseInt(v)); }
+function scSeek(e){ if(!scReady) return; scWidget.getDuration(dur => { const r=e.currentTarget.getBoundingClientRect(); const pct=(e.clientX-r.left)/r.width; scWidget.seekTo(pct*dur); }); }
+function scSwitchPlaylist(idx){
+  scCurrentPlaylist = parseInt(idx);
+  scReady = false;
+  scPlaying = false;
+  document.getElementById('music-play-btn').textContent = '▶';
+  document.getElementById('music-status').textContent = '● Standby';
+  document.getElementById('music-track').textContent = 'Loading...';
+  document.getElementById('music-artist').textContent = '';
+  document.getElementById('music-progress-fill').style.width = '0%';
+  const iframe = document.getElementById('sc-iframe');
+  iframe.src = scBuildSrc(SC_PLAYLISTS[scCurrentPlaylist]);
+  iframe.onload = () => { if(window.SC) scBind(); };
+}
+
+// Lazy-init: don't load SC iframe until first play click (saves bandwidth)
+// scInit called on first click of play button above
+
+// ─────────────────────────────────────────
+// MSFT LIVE PRICE → CLEM SAD FACE
+// Uses Yahoo Finance via a CORS proxy
+// ─────────────────────────────────────────
+
+async function fetchMSFTPrice(){
+  try{
+    // Use allorigins CORS proxy to fetch Yahoo Finance quote
+    const url='https://query1.finance.yahoo.com/v8/finance/chart/MSFT?interval=1d&range=5d';
+    const proxy=`https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`;
+    const r=await fetch(proxy,{signal:AbortSignal.timeout(6000)});
+    const d=await r.json();
+    const price=d?.chart?.result?.[0]?.meta?.regularMarketPrice;
+    if(price){
+      msftPrice=price;
+      const prevClose=d?.chart?.result?.[0]?.meta?.chartPreviousClose||price;
+      const isDown=(price<prevClose)||(price<400);
+      // Update Clem's sad state based on real price
+      if(hosts[curHost].name==='Clem'){
+        document.getElementById('clem-sad').style.display=isDown?'block':'none';
       }
-      isPlaying = !isPlaying;
-    });
+      // Also update condition display with a small real price indicator
+      const priceEl=document.getElementById('msft-live-price');
+      if(priceEl){
+        priceEl.textContent=`MSFT $${price.toFixed(2)} ${price<prevClose?'▼':'▲'}`;
+        priceEl.style.color=price<prevClose?'var(--red)':'var(--green)';
+      }
+    }
+  }catch(e){ /* silent fail — live price is bonus, not critical */ }
+}
+// Fetch on load and every 5 minutes
+fetchMSFTPrice();
+setInterval(fetchMSFTPrice,300000);
 
-    audio.addEventListener('error', () => {
-      alert('Background music could not be loaded.');
-    });
-
-    const quotes = {
-      clem: ["Let the clouds carry your worries away.", "MSFT is rising — and so is your mood.", "Clem says: always carry an umbrella, just in case."],
-      leo: ["Leo: A clear sky, a clear mind.", "Leo never misses a forecast.", "Leo thinks it's a great day to invest."],
-      chris: ["Chris recommends layers today!", "Chris says: check the skies, not just the stock.", "Chris always predicts good vibes."],
-      zach: ["Zach: It's windy — but that's just market sentiment.", "Zach advises: sunglasses and stocks.", "Zach loves weather with a little drama."],
-      ray: ["Ray: Expect the unexpected skies.", "Ray thinks the market and weather both look good.", "Ray's forecast: optimistic."]
-    };
-
-    const hosts = Object.keys(quotes);
-    const hostImage = document.getElementById('host-image');
-    const hostName = document.getElementById('host-name');
-    const quoteDisplay = document.getElementById('quote');
-    const changeHostBtn = document.getElementById('change-host');
-
-    changeHostBtn.addEventListener('click', () => {
-      const randomHost = hosts[Math.floor(Math.random() * hosts.length)];
-
-      hostImage.style.transform = 'rotateY(180deg)';
-      setTimeout(() => {
-        hostImage.src = `${randomHost}.jpg`;
-        hostImage.style.transform = 'rotateY(0deg)';
-        hostName.textContent = `Hosted by ${randomHost.replace(/\b\w/g, c => c.toUpperCase())}`;
-        const quoteList = quotes[randomHost];
-        quoteDisplay.textContent = `\u201C${quoteList[Math.floor(Math.random() * quoteList.length)]}\u201D`;
-      }, 300);
-    });
-
-    const bgList = ['bg1.gif', 'bg2.jpg', 'bg3.gif', 'bg4.gif', 'bg5.gif'];
-    let bgIndex = 0;
-    const bgDiv = document.getElementById('background');
-    const bgBtn = document.getElementById('change-bg');
-
-    bgBtn.addEventListener('click', () => {
-      bgIndex = (bgIndex + 1) % bgList.length;
-      bgDiv.style.backgroundImage = `url('${bgList[bgIndex]}')`;
-    });
-  </script>
+// (music player is now SoundCloud Widget — see scTogglePlay etc above)
+</script>
 </body>
 </html>
